@@ -49,6 +49,33 @@
     touch-action: none;
 }
 
+/*
+ * The wire:ignore wrapper on the Filament page.
+ *
+ * An explicit viewport-relative height, not h-full: height:100% only resolves if
+ * every ancestor up to <body> also has a resolved height, and Filament's page
+ * chrome does not. A canvas whose parent collapses to 0px renders nothing and
+ * reports no error, which is the worst failure mode available.
+ *
+ * The subtraction covers the 4rem topbar plus the page heading and its margins.
+ * The dark background is painted here as well as on the canvas so there is no
+ * white seam if the canvas has not sized itself yet.
+ */
+.jg-scene-host {
+    height: calc(100vh - 13rem);
+    min-height: 460px;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    background: var(--jg-canvas);
+}
+
+.jg-scene-host > [data-jetgrid-scene],
+.jg-scene-host .jg-scene {
+    height: 100%;
+    border-radius: 0;
+    border: 0;
+}
+
 .jg-scene__hud {
     position: absolute;
     top: 0.875rem;

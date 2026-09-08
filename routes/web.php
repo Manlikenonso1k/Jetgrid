@@ -3,10 +3,12 @@
 use App\Http\Controllers\Api\GridDataController;
 use App\Http\Controllers\Api\LocalProjectController;
 use App\Http\Controllers\Api\SiteDetailController;
+use App\Http\Controllers\LandingController;
 use App\Http\Middleware\EnsureLocalMode;
 use Illuminate\Support\Facades\Route;
 
-Route::redirect('/', '/admin');
+// Public marketing page for guests; authenticated visitors go straight to the grid.
+Route::get('/', LandingController::class)->name('landing');
 
 /*
  * Art-direction sandbox for the 3D scene: hardcoded mock houses, no data layer

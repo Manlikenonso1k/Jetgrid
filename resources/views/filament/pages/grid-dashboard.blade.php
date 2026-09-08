@@ -6,14 +6,22 @@
 <x-filament-panels::page>
     {{-- The React root. Everything inside the canvas is driven by the JSON
          endpoints below; this page never re-renders it via Livewire. --}}
-    <div
-        data-jetgrid-scene
-        data-grid-endpoint="{{ route('jetgrid.api.grid') }}"
-        data-site-endpoint="{{ url('jetgrid/api/sites') }}"
-    >
-        {{-- Replaced when React mounts; still visible means the bundle never ran. --}}
-        <div style="padding:24px;color:#8a97a0;font:13px/1.6 ui-monospace,Menlo,Consolas,monospace">
-            Booting the 3D grid&hellip; if this text remains, the JavaScript bundle did not execute.
+    {{--
+        wire:ignore is load-bearing, not defensive. This page is a Livewire
+        component, and any re-render — a notification, a poll, a property change —
+        makes Livewire diff the DOM. Without this it rips out or duplicates the
+        React-mounted node and the canvas goes blank or ghosts a second context.
+    --}}
+    <div wire:ignore class="jg-scene-host">
+        <div
+            data-jetgrid-scene
+            data-grid-endpoint="{{ route('jetgrid.api.grid') }}"
+            data-site-endpoint="{{ url('jetgrid/api/sites') }}"
+        >
+            {{-- Replaced when React mounts; still visible means the bundle never ran. --}}
+            <div style="padding:24px;color:#8a97a0;font:13px/1.6 ui-monospace,Menlo,Consolas,monospace">
+                Booting the 3D grid&hellip; if this text remains, the JavaScript bundle did not execute.
+            </div>
         </div>
     </div>
 

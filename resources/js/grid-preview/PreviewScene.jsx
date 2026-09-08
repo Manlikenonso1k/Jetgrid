@@ -1,6 +1,7 @@
 import {
     ContactShadows,
     Grid,
+    Html,
     Instance,
     Instances,
     OrbitControls,
@@ -8,13 +9,17 @@ import {
 } from '@react-three/drei';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Bloom, EffectComposer } from '@react-three/postprocessing';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import * as THREE from 'three';
-import { BEACON, mockHouses } from './mockHouses';
+import { HouseLabels } from '../grid/HouseLabels';
+import { BEACON, mockHouses, TYPE_BADGE } from './mockHouses';
 
 const BODY_LIT = '#252c2e';
 const BODY_DARK = '#14181a';
 const ROOF_DARK = '#1c2022';
+
+const NEAR_DISTANCE = 30;
+const FAR_DISTANCE = 52;
 
 /**
  * Aircraft anticollision profile over a 0..1 phase: sharp rise, short hold,
@@ -34,6 +39,10 @@ function bodyHeight(scale) {
 
 function roofApex(scale) {
     return bodyHeight(scale) + 0.85 * scale;
+}
+
+function labelHeight(scale) {
+    return roofApex(scale) + 0.75;
 }
 
 /**
@@ -76,7 +85,7 @@ function Beacon({ house }) {
     );
 }
 
-function Houses({ houses }) {
+function Houses({ houses, onHover }) {
     return (
         <>
             <Instances limit={200} range={houses.length}>
@@ -92,6 +101,11 @@ function Houses({ houses }) {
                             position={[house.position[0], h / 2, house.position[2]]}
                             scale={[w, h, w]}
                             color={house.beacon === 'grey' ? BODY_DARK : BODY_LIT}
+                            onPointerOver={(event) => {
+                                event.stopPropagation();
+                                onHover(house);
+                            }}
+                            onPointerOut={() => onHover(null)}
                         />
                     );
                 })}
@@ -117,6 +131,25 @@ function Houses({ houses }) {
             </Instances>
         </>
     );
+}
+
+/**
+ * Flips a single boolean when the camera crosses the label-fade threshold, so
+ * the hover tooltip can take over exactly when the 3D labels give up. State
+ * changes on the crossing only — not per frame.
+ */
+function LabelRangeWatch({ threshold, onChange }) {
+    const wasFar = useRef(null);
+
+    useFrame(({ camera }) => {
+        const far = camera.position.length() > threshold;
+        if (far !== wasFar.current) {
+            wasFar.current = far;
+            onChange(far);
+        }
+    });
+
+    return null;
 }
 
 function Ground() {
@@ -145,6 +178,22 @@ function Ground() {
 }
 
 export function GridPreview() {
+    const [labelMode, setLabelMode] = useState('hover');
+    const [hovered, setHovered] = useState(null);
+    const [outOfLabelRange, setOutOfLabelRange] = useState(false);
+
+    const labels = mockHouses.map((house) => ({
+        id: house.id,
+        name: house.name,
+        port: house.port,
+        type: house.type,
+        badge: TYPE_BADGE[house.type] ?? TYPE_BADGE.static,
+        position: [house.position[0], labelHeight(house.scale), house.position[2]],
+    }));
+
+    // Only stand in for the 3D labels when they have actually faded out.
+    const showTooltip = labelMode === 'hover' && outOfLabelRange && hovered;
+
     return (
         <div className="jg-preview">
             <Canvas
@@ -154,6 +203,7 @@ export function GridPreview() {
                     powerPreference: 'high-performance',
                     toneMapping: THREE.ACESFilmicToneMapping,
                 }}
+                onPointerMissed={() => setHovered(null)}
             >
                 <color attach="background" args={['#0a0e0a']} />
                 <fogExp2 attach="fog" args={['#0a0e0a', 0.026]} />
@@ -166,12 +216,43 @@ export function GridPreview() {
                 <directionalLight position={[14, 22, 8]} intensity={0.85} color="#cfe6ff" />
 
                 <Ground />
-                <Houses houses={mockHouses} />
+                <Houses houses={mockHouses} onHover={setHovered} />
                 {mockHouses
                     .filter((house) => BEACON[house.beacon])
                     .map((house) => (
                         <Beacon key={house.id} house={house} />
                     ))}
+
+                <HouseLabels
+                    labels={labels}
+                    mode={labelMode}
+                    nearDistance={NEAR_DISTANCE}
+                    farDistance={FAR_DISTANCE}
+                />
+
+                <LabelRangeWatch threshold={NEAR_DISTANCE} onChange={setOutOfLabelRange} />
+
+                {showTooltip && (
+                    <Html
+                        position={[
+                            hovered.position[0],
+                            labelHeight(hovered.scale),
+                            hovered.position[2],
+                        ]}
+                        center
+                        distanceFactor={22}
+                        zIndexRange={[20, 0]}
+                    >
+                        <div className="jg-tip">
+                            <span
+                                className="jg-tip__dot"
+                                style={{ background: TYPE_BADGE[hovered.type] ?? '#9aa4ad' }}
+                            />
+                            {hovered.name}
+                            {hovered.port && <span className="jg-tip__port">:{hovered.port}</span>}
+                        </div>
+                    </Html>
+                )}
 
                 <ContactShadows
                     position={[0, 0.005, 0]}
@@ -198,12 +279,18 @@ export function GridPreview() {
                 />
             </Canvas>
 
-            <Legend />
+            <Legend labelMode={labelMode} onLabelMode={setLabelMode} />
         </div>
     );
 }
 
-function Legend() {
+const MODES = [
+    ['always', 'Always show names'],
+    ['hover', 'On hover + nearby'],
+    ['off', 'Off'],
+];
+
+function Legend({ labelMode, onLabelMode }) {
     const rows = [
         ['green', 'running, healthy', '3.0s'],
         ['blue', 'starting / deploying', '1.0s'],
@@ -233,6 +320,20 @@ function Legend() {
                     </li>
                 ))}
             </ul>
+
+            <div className="jg-modes">
+                <span className="jg-modes__title">Labels</span>
+                {MODES.map(([value, label]) => (
+                    <button
+                        key={value}
+                        type="button"
+                        className={value === labelMode ? 'jg-mode jg-mode--on' : 'jg-mode'}
+                        onClick={() => onLabelMode(value)}
+                    >
+                        {label}
+                    </button>
+                ))}
+            </div>
         </div>
     );
 }

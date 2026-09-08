@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Pages\GridDashboard;
 use App\Http\Middleware\RequireTwoFactor;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -28,6 +29,29 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            /*
+             * Public signup, because the landing page sells it.
+             *
+             * READ THIS BEFORE DEPLOYING: this opens /admin/register to anyone
+             * who can reach the host. New accounts get no plan and no elevated
+             * role, and every privileged action stays behind the kill switch,
+             * the protected-site gate and 2FA — but on a panel that holds
+             * root-adjacent sudo, open registration is a deliberate posture, not
+             * a default. Remove this line to make the panel invite-only again.
+             */
+            ->registration()
+            /*
+             * /admin lands on the grid. A Closure rather than a string because
+             * this runs while the panel is being configured, before the page's
+             * route exists to be resolved.
+             *
+             * Chosen over registering a Dashboard page: this panel has none at
+             * all, so hosting the grid on one would mean either a second class
+             * duplicating GridDashboard or making GridDashboard extend
+             * Filament's Dashboard and inherit widget machinery it never uses.
+             * The cost is one 302 from /admin to /admin/grid.
+             */
+            ->homeUrl(fn (): string => GridDashboard::getUrl())
             ->brandName('JetGrid')
             ->favicon(asset('favicon.ico'))
             /*

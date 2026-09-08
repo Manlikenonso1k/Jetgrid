@@ -28,6 +28,13 @@ class GridDashboard extends Page
 
     protected static string $view = 'filament.pages.grid-dashboard';
 
+    /*
+     * Filament constrains page content to a readable measure by default, which
+     * letterboxes a canvas that is meant to run edge to edge. Typed ?string
+     * rather than the MaxWidth enum because that is BasePage's signature.
+     */
+    protected ?string $maxContentWidth = 'full';
+
     public function getSubheading(): ?string
     {
         return app(KillSwitch::class)->explain();

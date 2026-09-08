@@ -35,21 +35,33 @@ const ROOF_BY_TYPE = {
 
 const PLOT = 3.2;
 
+/** Dot beside the name on the label. Distinct hues, kept off the beacon palette. */
+export const TYPE_BADGE = {
+    laravel: '#ff5b47',
+    node: '#7fd858',
+    python: '#4b8bbe',
+    go: '#43c3d4',
+    rust: '#d98b4a',
+    docker: '#4a90e2',
+    static: '#9aa4ad',
+    php: '#8892bf',
+};
+
 const LAYOUT = [
-    { name: 'shopfront', type: 'laravel', beacon: 'green', scale: 1.15 },
-    { name: 'api-gateway', type: 'node', beacon: 'green', scale: 0.95 },
-    { name: 'billing', type: 'laravel', beacon: 'red', scale: 1.05 },
-    { name: 'ingest-worker', type: 'python', beacon: 'red', scale: 0.9 },
+    { name: 'shopfront', type: 'laravel', beacon: 'green', scale: 1.15, port: 8000 },
+    { name: 'api-gateway', type: 'node', beacon: 'green', scale: 0.95, port: 3000 },
+    { name: 'billing', type: 'laravel', beacon: 'red', scale: 1.05, port: 8001 },
+    { name: 'ingest-worker', type: 'python', beacon: 'red', scale: 0.9, port: 8002 },
 
-    { name: 'admin-ui', type: 'node', beacon: 'yellow', scale: 1.0 },
-    { name: 'docs-site', type: 'static', beacon: 'yellow', scale: 0.85 },
-    { name: 'checkout', type: 'laravel', beacon: 'blue', scale: 1.2 },
-    { name: 'edge-proxy', type: 'go', beacon: 'blue', scale: 0.95 },
+    { name: 'admin-ui', type: 'node', beacon: 'yellow', scale: 1.0, port: 5173 },
+    { name: 'docs-site', type: 'static', beacon: 'yellow', scale: 0.85, port: null },
+    { name: 'checkout', type: 'laravel', beacon: 'blue', scale: 1.2, port: 8003 },
+    { name: 'edge-proxy', type: 'go', beacon: 'blue', scale: 0.95, port: 8080 },
 
-    { name: 'analytics', type: 'docker', beacon: 'purple', scale: 1.1 },
-    { name: 'queue-runner', type: 'docker', beacon: 'purple', scale: 0.9 },
-    { name: 'legacy-blog', type: 'php', beacon: 'grey', scale: 1.0 },
-    { name: 'archive', type: 'static', beacon: 'grey', scale: 0.8 },
+    { name: 'analytics', type: 'docker', beacon: 'purple', scale: 1.1, port: 9000 },
+    { name: 'queue-runner', type: 'docker', beacon: 'purple', scale: 0.9, port: 9001 },
+    { name: 'legacy-blog', type: 'php', beacon: 'grey', scale: 1.0, port: null },
+    { name: 'archive', type: 'static', beacon: 'grey', scale: 0.8, port: null },
 ];
 
 export const mockHouses = LAYOUT.map((entry, i) => {

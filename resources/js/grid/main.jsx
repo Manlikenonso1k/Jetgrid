@@ -10,17 +10,35 @@ import { reportBootFailure, SceneErrorBoundary } from './ErrorBoundary';
  * places to keep the layout consistent — for a single canvas that only needs a
  * div and a JSON endpoint. React mounts into the page; everything else stays
  * Livewire.
- *
- * GridDashboard is loaded dynamically so a failure inside three/drei is reported
- * in the page instead of leaving an empty div behind.
  */
+
+/*
+ * Roots are tracked so they can be unmounted before Livewire swaps the page.
+ * A browser allows only a handful of live WebGL contexts (commonly 16), and
+ * React roots left mounted across wire:navigate leak one each — after a few
+ * navigations the oldest context is force-lost and the canvas dies with no error.
+ * Unmounting lets R3F dispose the renderer properly.
+ */
+const roots = new Map();
+
 function mount(element) {
-    if (element.dataset.jgMounted === 'true') return;
-    element.dataset.jgMounted = 'true';
+    if (roots.has(element)) return;
+
+    // Claimed synchronously: the dynamic import below is async, and a second
+    // mountAll() can fire before it resolves.
+    roots.set(element, null);
 
     import('./GridDashboard')
         .then(({ GridDashboard }) => {
-            createRoot(element).render(
+            if (!element.isConnected) {
+                roots.delete(element);
+                return;
+            }
+
+            const root = createRoot(element);
+            roots.set(element, root);
+
+            root.render(
                 <SceneErrorBoundary>
                     <GridDashboard
                         gridEndpoint={element.dataset.gridEndpoint}
@@ -30,9 +48,15 @@ function mount(element) {
             );
         })
         .catch((error) => {
+            roots.delete(element);
             console.error('[JetGrid] dashboard bundle failed to evaluate:', error);
             reportBootFailure(element, error?.stack || String(error));
         });
+}
+
+function unmountAll() {
+    roots.forEach((root) => root?.unmount());
+    roots.clear();
 }
 
 function mountAll() {
@@ -42,4 +66,8 @@ function mountAll() {
 document.addEventListener('DOMContentLoaded', mountAll);
 // Filament navigates with Livewire, so the element can appear after load.
 document.addEventListener('livewire:navigated', mountAll);
+// Fires before the outgoing page is torn down, which is the only point where
+// the WebGL context can still be released cleanly.
+document.addEventListener('livewire:navigating', unmountAll);
+
 mountAll();
