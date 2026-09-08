@@ -1,0 +1,9 @@
+services:
+  app:
+    image: php
+    ports:
+      - "8081:80"
+  db:
+    image: mysql
+    ports:
+      - "127.0.0.1:33061:3306"

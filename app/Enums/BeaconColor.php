@@ -10,6 +10,7 @@ enum BeaconColor: string
     case Yellow = 'yellow';  // updates pending or cert expiring soon
     case Blue = 'blue';    // deployment in progress
     case Grey = 'grey';    // protected / adopted, monitoring only
+    case Purple = 'purple';  // local project running under Docker (L7)
 
     /** Blinks per second. Faster = more critical. */
     public function blinkHz(): float
@@ -20,6 +21,7 @@ enum BeaconColor: string
             self::Yellow => 1.0,
             self::Green => 0.4,
             self::Grey => 0.2,
+            self::Purple => 0.8,
         };
     }
 
@@ -31,6 +33,7 @@ enum BeaconColor: string
             self::Yellow => '#FFD60A',
             self::Blue => '#3B9DFF',
             self::Grey => '#8A8F98',
+            self::Purple => '#B15BFF',
         };
     }
 }

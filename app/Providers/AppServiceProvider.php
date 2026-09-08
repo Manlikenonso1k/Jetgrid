@@ -2,6 +2,9 @@
 
 namespace App\Providers;
 
+use App\Services\Local\Platform\PlatformCommands;
+use App\Services\Local\Platform\PlatformDetector;
+use App\Services\Local\Platform\ToolLocator;
 use App\Services\Server\FakeServerDriver;
 use App\Services\Server\LinuxServerDriver;
 use App\Services\Server\ServerDriver;
@@ -28,6 +31,17 @@ class AppServiceProvider extends ServiceProvider
             config('jetgrid.managed_sites_root'),
             config('jetgrid.config_backup_dir'),
         ]));
+
+        // Local mode. Both are singletons because both memoise: ToolLocator
+        // caches PATH lookups and PlatformDetector caches the workstation
+        // verdict, which includes a network probe that must not run once per
+        // project per poll.
+        $this->app->singleton(ToolLocator::class);
+        $this->app->singleton(PlatformDetector::class);
+
+        // The one place the OS is branched on. Everything downstream depends on
+        // the interface, so a fourth platform is one new class and one new arm.
+        $this->app->bind(PlatformCommands::class, fn ($app) => $app->make(PlatformDetector::class)->commands());
     }
 
     public function boot(): void

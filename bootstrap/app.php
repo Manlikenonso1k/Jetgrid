@@ -1,6 +1,7 @@
 <?php
 
 use App\Exceptions\JetGridSafetyException;
+use App\Http\Middleware\EnsureLocalMode;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -13,6 +14,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // L0. Every local-control route carries this alias; LocalModeRouteTest
+        // asserts that none can be added without it.
+        $middleware->alias([EnsureLocalMode::ALIAS => EnsureLocalMode::class]);
+
         // JetGrid has no login route of its own — Filament owns authentication,
         // so guests are sent to the panel rather than to a route that does not
         // exist.

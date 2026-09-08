@@ -43,6 +43,11 @@ class AdminPanelProvider extends PanelProvider
                 'warning' => Color::Amber,
                 'success' => Color::Emerald,
                 'gray' => Color::Slate,
+                // BeaconColor::Purple (a project running under Docker) is shown
+                // as a badge. Filament resolves badge colours through this
+                // registry, so a name that is not registered here renders with no
+                // styling at all rather than failing loudly.
+                'purple' => Color::Purple,
             ])
             ->renderHook(
                 PanelsRenderHook::HEAD_END,

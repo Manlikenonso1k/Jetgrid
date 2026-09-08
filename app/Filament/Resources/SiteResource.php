@@ -78,6 +78,7 @@ class SiteResource extends Resource
                         BeaconColor::Yellow => 'warning',
                         BeaconColor::Blue => 'info',
                         BeaconColor::Grey => 'gray',
+                        BeaconColor::Purple => 'purple',
                     }),
 
                 Tables\Columns\TextColumn::make('health_score')

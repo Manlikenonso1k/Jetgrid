@@ -4,6 +4,17 @@ return [
 
     /*
     |---------------------------------------------------------------------------
+    | MODE  (Local module, L0)
+    |---------------------------------------------------------------------------
+    | 'production' is the default because the failure mode of guessing wrong is
+    | JetGrid starting and stopping processes on a live server. Setting this to
+    | 'local' is only the FIRST of four independent checks — see
+    | App\Services\Local\LocalModeGate.
+    */
+    'mode' => env('JETGRID_MODE', 'production'),
+
+    /*
+    |---------------------------------------------------------------------------
     | KILL SWITCH  (Safety constraint #8)
     |---------------------------------------------------------------------------
     | When true, EVERY privileged write operation is refused at the CommandRunner
@@ -133,6 +144,88 @@ return [
     'instance_id' => env('JETGRID_INSTANCE_ID'),
     'instance_type' => env('JETGRID_INSTANCE_TYPE'),
     'cloudwatch_enabled' => env('JETGRID_CLOUDWATCH', false),
+
+    /*
+    |---------------------------------------------------------------------------
+    | LOCAL PROJECT DISCOVERY & CONTROL  (L0-L9)
+    |---------------------------------------------------------------------------
+    | Everything under here is inert unless LocalModeGate passes all four of its
+    | checks. Nothing in this block can be reached on a production install.
+    */
+    'local' => [
+
+        // L0 check 3. Touching any of these files on a server permanently
+        // disables local mode there, with no deploy and no config change.
+        'production_markers' => [
+            '/etc/jetgrid/production.lock',
+            '/etc/jetgrid/production',
+            'C:\ProgramData\JetGrid\production.lock',
+        ],
+
+        // L0 check 4. The cloud metadata probe is a 150ms TCP connect to the
+        // link-local address; disable it on a workstation whose network stack
+        // makes even that slow.
+        'metadata_probe' => env('JETGRID_LOCAL_METADATA_PROBE', true),
+        'metadata_endpoint' => ['169.254.169.254', 80],
+
+        'scan' => [
+            // L2. The default root is derived, not configured: dirname(base_path()).
+            // Extra roots are additive and each is toggleable in the UI.
+            'extra_roots' => array_values(array_filter(
+                explode(',', (string) env('JETGRID_LOCAL_ROOTS', ''))
+            )),
+            'max_depth' => (int) env('JETGRID_LOCAL_MAX_DEPTH', 2),
+
+            // Never descended into. These are where the walk would otherwise
+            // spend all of its time and find nothing.
+            'skip' => [
+                'node_modules', 'vendor', '.git', '.idea', '.vscode', 'dist',
+                'build', 'storage', 'bootstrap/cache', '__pycache__', 'target',
+                '.next', '.nuxt', 'Pods',
+            ],
+
+            // L2: incremental + cached. The walk is the expensive part, so its
+            // result is cached and the dashboard reads the database instead.
+            'cache_ttl' => (int) env('JETGRID_LOCAL_CACHE_TTL', 300),
+        ],
+
+        'probe' => [
+            'tcp_timeout_ms' => 200,      // L5 layer 1
+            'http_timeout_ms' => 1500,    // L5 layer 2
+            'command_timeout' => 5,       // seconds, L5 layer 3 + 4
+            'poll_ms' => (int) env('JETGRID_LOCAL_POLL_MS', 5000),
+        ],
+
+        // Framework defaults, used only when nothing more specific is readable.
+        'default_ports' => [
+            'laravel' => 8000,
+            'symfony' => 8000,
+            'wordpress' => 8080,
+            'php' => 8000,
+            'nextjs' => 3000,
+            'nuxt' => 3000,
+            'vite' => 5173,
+            'node' => 3000,
+            'django' => 8000,
+            'flask' => 5000,
+            'rails' => 3000,
+            'go' => 8080,
+            'rust' => 8080,
+            'static' => 8000,
+        ],
+
+        // L6. JetGrid's OWN storage — never a discovered project's directory.
+        'pid_dir' => storage_path('app'.DIRECTORY_SEPARATOR.'jetgrid'.DIRECTORY_SEPARATOR.'pids'),
+        'log_dir' => storage_path('app'.DIRECTORY_SEPARATOR.'jetgrid'.DIRECTORY_SEPARATOR.'logs'),
+
+        // Optional: pick the next free port when the preferred one is taken.
+        'auto_port' => env('JETGRID_LOCAL_AUTO_PORT', false),
+        'auto_port_range' => 40,
+
+        // How long a spawned process may sit in "starting" before the port is
+        // expected to be listening.
+        'start_grace_seconds' => 30,
+    ],
 
     'pricing' => [
         // (b) seeded JSON with a visible last-updated date + admin refresh action.
