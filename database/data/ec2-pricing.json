@@ -1,0 +1,71 @@
+{
+  "_readme": "Feature 7 ships approach (b): a seeded catalogue with a visible provenance date and an in-app refresh action. SPECS (vCPU, RAM, baseline CPU %, credits/hour) are published EC2 architectural facts and change rarely. PRICES are volatile and the values below are UNVERIFIED SEED DATA that were not read from AWS. The UI shows them struck through with a warning until a refresh succeeds. Do not quote them to anyone.",
+  "price_status": "unverified_seed",
+  "price_source": "seed",
+  "prices_verified_at": null,
+  "specs_source": "AWS EC2 burstable performance instance documentation",
+  "seeded_at": "2026-09-08",
+  "region": "us-east-1",
+  "currency": "USD",
+  "instances": {
+    "t3.nano": {
+      "family": "t3", "vcpu": 2, "ram_gib": 0.5,
+      "baseline_cpu_pct": 5, "credits_per_hour": 6,
+      "network": "Up to 5 Gbps", "on_demand_hourly": 0.0052
+    },
+    "t3.micro": {
+      "family": "t3", "vcpu": 2, "ram_gib": 1,
+      "baseline_cpu_pct": 10, "credits_per_hour": 12,
+      "network": "Up to 5 Gbps", "on_demand_hourly": 0.0104
+    },
+    "t3.small": {
+      "family": "t3", "vcpu": 2, "ram_gib": 2,
+      "baseline_cpu_pct": 20, "credits_per_hour": 24,
+      "network": "Up to 5 Gbps", "on_demand_hourly": 0.0208
+    },
+    "t3.medium": {
+      "family": "t3", "vcpu": 2, "ram_gib": 4,
+      "baseline_cpu_pct": 20, "credits_per_hour": 24,
+      "network": "Up to 5 Gbps", "on_demand_hourly": 0.0416
+    },
+    "t3.large": {
+      "family": "t3", "vcpu": 2, "ram_gib": 8,
+      "baseline_cpu_pct": 30, "credits_per_hour": 36,
+      "network": "Up to 5 Gbps", "on_demand_hourly": 0.0832
+    },
+    "t3.xlarge": {
+      "family": "t3", "vcpu": 4, "ram_gib": 16,
+      "baseline_cpu_pct": 40, "credits_per_hour": 96,
+      "network": "Up to 5 Gbps", "on_demand_hourly": 0.1664
+    },
+    "t3.2xlarge": {
+      "family": "t3", "vcpu": 8, "ram_gib": 32,
+      "baseline_cpu_pct": 40, "credits_per_hour": 192,
+      "network": "Up to 5 Gbps", "on_demand_hourly": 0.3328
+    },
+    "t4g.small": {
+      "family": "t4g", "vcpu": 2, "ram_gib": 2,
+      "baseline_cpu_pct": 20, "credits_per_hour": 24,
+      "network": "Up to 5 Gbps", "on_demand_hourly": 0.0168,
+      "note": "Graviton (arm64) — requires arm64 builds of your stack."
+    },
+    "t4g.medium": {
+      "family": "t4g", "vcpu": 2, "ram_gib": 4,
+      "baseline_cpu_pct": 20, "credits_per_hour": 24,
+      "network": "Up to 5 Gbps", "on_demand_hourly": 0.0336,
+      "note": "Graviton (arm64) — requires arm64 builds of your stack."
+    },
+    "m7i.large": {
+      "family": "m7i", "vcpu": 2, "ram_gib": 8,
+      "baseline_cpu_pct": 100, "credits_per_hour": null,
+      "network": "Up to 12.5 Gbps", "on_demand_hourly": 0.1008,
+      "note": "Fixed performance — no credit system, so no credit cliff."
+    },
+    "c7i.large": {
+      "family": "c7i", "vcpu": 2, "ram_gib": 4,
+      "baseline_cpu_pct": 100, "credits_per_hour": null,
+      "network": "Up to 12.5 Gbps", "on_demand_hourly": 0.0892,
+      "note": "Fixed performance — no credit system."
+    }
+  }
+}

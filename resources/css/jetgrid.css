@@ -1,0 +1,289 @@
+/*
+ * JetGrid brand tokens.
+ *
+ * The neon (#39FF14) is a canvas colour, not a UI colour: against white it has
+ * a contrast ratio of about 1.4:1, which is unreadable as text or a border. So
+ * the brand is defined as two tokens with one job each —
+ *
+ *   --jg-neon    #39FF14  the real neon. Only ever used ON the dark 3D canvas
+ *                         (beacons, glow, grid lines), where it reads correctly.
+ *   --jg-accent  #17800F  the desaturated variant for the light UI. 5.09:1 on
+ *                         white, so it passes WCAG AA for body text.
+ *
+ * Everything in the Filament panel uses --jg-accent. Nothing in the panel uses
+ * raw neon on white.
+ */
+:root {
+    --jg-neon: #39ff14;
+    --jg-neon-dim: #2fd41f;
+    --jg-accent: #17800f;
+    --jg-accent-hover: #0f5c09;
+
+    --jg-canvas: #070a0c;
+    --jg-canvas-grid: #14351a;
+
+    --jg-red: #ff3b30;
+    --jg-yellow: #ffd60a;
+    --jg-blue: #3b9dff;
+    --jg-grey: #8a8f98;
+
+    --jg-protected-bg: #f4f5f7;
+    --jg-protected-border: #d6d9de;
+}
+
+/* ---- The 3D dashboard shell ------------------------------------------- */
+
+.jg-scene {
+    position: relative;
+    width: 100%;
+    height: min(72vh, 780px);
+    min-height: 420px;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    background: var(--jg-canvas);
+    border: 1px solid #1c2329;
+}
+
+.jg-scene canvas {
+    display: block;
+    touch-action: none;
+}
+
+.jg-scene__hud {
+    position: absolute;
+    top: 0.875rem;
+    left: 0.875rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    pointer-events: none;
+    max-width: calc(100% - 1.75rem);
+}
+
+.jg-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.3rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    background: rgba(10, 16, 20, 0.82);
+    border: 1px solid #223039;
+    color: #d7e0e6;
+    backdrop-filter: blur(6px);
+}
+
+.jg-chip__dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 999px;
+    flex: none;
+}
+
+.jg-chip--neon {
+    color: var(--jg-neon);
+    border-color: #1d5a24;
+}
+
+.jg-chip--warn {
+    color: var(--jg-yellow);
+    border-color: #5a4c12;
+}
+
+.jg-chip--danger {
+    color: var(--jg-red);
+    border-color: #5a1f1c;
+}
+
+/* ---- Side panel -------------------------------------------------------- */
+
+.jg-panel {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: min(360px, 88%);
+    background: rgba(9, 14, 18, 0.96);
+    border-left: 1px solid #1e2830;
+    color: #dfe7ec;
+    padding: 1.1rem;
+    overflow-y: auto;
+    backdrop-filter: blur(10px);
+}
+
+.jg-panel__close {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    background: transparent;
+    border: 1px solid #2a353d;
+    color: #93a1ab;
+    border-radius: 0.4rem;
+    width: 1.75rem;
+    height: 1.75rem;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.jg-panel__close:hover {
+    color: #fff;
+    border-color: #46545f;
+}
+
+.jg-panel h2 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 0 0 0.15rem;
+    padding-right: 2rem;
+    word-break: break-all;
+}
+
+.jg-panel__mode {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #8a97a1;
+    margin-bottom: 0.9rem;
+}
+
+.jg-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.4rem 0;
+    border-bottom: 1px solid #182027;
+    font-size: 0.8rem;
+}
+
+.jg-row dt {
+    color: #8a97a1;
+}
+
+.jg-row dd {
+    margin: 0;
+    text-align: right;
+    color: #e6eef3;
+    font-variant-numeric: tabular-nums;
+}
+
+/*
+ * The protected notice. This is load-bearing UI, not decoration: it is what
+ * tells the operator why an adopted site has no action buttons.
+ */
+.jg-locked {
+    margin-top: 1rem;
+    padding: 0.7rem 0.8rem;
+    border-radius: 0.5rem;
+    background: rgba(138, 143, 152, 0.12);
+    border: 1px solid #39424b;
+    color: #b8c2cb;
+    font-size: 0.75rem;
+    line-height: 1.5;
+}
+
+.jg-locked strong {
+    color: #e2e8ed;
+    display: block;
+    margin-bottom: 0.2rem;
+}
+
+/* ---- Flat fallback (prefers-reduced-motion) ---------------------------- */
+
+.jg-flat {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 0.75rem;
+    padding: 1rem;
+    height: 100%;
+    overflow-y: auto;
+    align-content: start;
+}
+
+.jg-flat__card {
+    background: #0e151a;
+    border: 1px solid #1f2a32;
+    border-radius: 0.6rem;
+    padding: 0.75rem;
+    text-align: left;
+    cursor: pointer;
+    color: #dfe7ec;
+    font: inherit;
+}
+
+.jg-flat__card:hover {
+    border-color: #33434e;
+}
+
+.jg-flat__card[data-protected='true'] {
+    opacity: 0.72;
+    cursor: default;
+}
+
+.jg-flat__top {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin-bottom: 0.35rem;
+}
+
+.jg-flat__name {
+    font-size: 0.8rem;
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.jg-flat__meta {
+    font-size: 0.7rem;
+    color: #8a97a1;
+}
+
+.jg-flat__empty {
+    border-style: dashed;
+    border-color: #23303a;
+    color: #5d6b76;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.72rem;
+    min-height: 74px;
+    cursor: default;
+}
+
+/* In the flat fallback the beacon must not blink — that is the point. */
+.jg-flat .jg-chip__dot {
+    animation: none !important;
+}
+
+.jg-empty-state {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #7f8b95;
+    font-size: 0.85rem;
+    text-align: center;
+    padding: 2rem;
+}
+
+/* ---- Panel-wide brand touches ------------------------------------------ */
+
+.jg-protected-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.1rem 0.45rem;
+    border-radius: 0.3rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    background: var(--jg-protected-bg);
+    border: 1px solid var(--jg-protected-border);
+    color: #4b5563;
+}
+
+.jg-readonly-banner {
+    border-left: 3px solid var(--jg-accent);
+}
