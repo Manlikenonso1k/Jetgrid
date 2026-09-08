@@ -6,9 +6,11 @@ use App\Exceptions\CommandNotWhitelistedException;
 use App\Exceptions\InvalidCommandArgumentException;
 use App\Exceptions\PathEscapeException;
 use App\Models\AuditLog;
+use App\Models\Setting;
 use App\Models\Site;
 use App\Services\Privilege\CommandRegistry;
 use App\Services\Privilege\CommandRunner;
+use App\Support\KillSwitch;
 use App\Support\PathGuard;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -95,7 +97,7 @@ class CommandWhitelistTest extends TestCase
 
         config()->set('jetgrid.readonly', false);
         config()->set('jetgrid.allow_runtime_unlock', true);
-        \App\Models\Setting::put(\App\Support\KillSwitch::SETTING, false);
+        Setting::put(KillSwitch::SETTING, false);
 
         $outcome = app(CommandRunner::class)->run('nginx.reload', [], $site, dryRun: true);
 

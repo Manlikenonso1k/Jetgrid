@@ -32,8 +32,7 @@ class GridDataController extends Controller
         private readonly MetricsCollector $metrics,
         private readonly GridLayout $layout,
         private readonly KillSwitch $killSwitch,
-    ) {
-    }
+    ) {}
 
     public function __invoke(): JsonResponse
     {

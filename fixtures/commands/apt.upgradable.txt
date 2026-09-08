@@ -1,0 +1,4 @@
+Listing...
+libssl3/jammy-security 3.0.2-0ubuntu1.16 amd64 [upgradable from: 3.0.2-0ubuntu1.15]
+openssh-server/jammy-security 1:8.9p1-3ubuntu0.11 amd64 [upgradable from: 1:8.9p1-3ubuntu0.10]
+tzdata/jammy-updates 2024a-0ubuntu0.22.04 all [upgradable from: 2023d-0ubuntu0.22.04]

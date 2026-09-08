@@ -10,9 +10,7 @@ use Illuminate\Http\JsonResponse;
 /** Side panel content when a house is clicked (Feature 1). */
 class SiteDetailController extends Controller
 {
-    public function __construct(private readonly HealthScoreService $health)
-    {
-    }
+    public function __construct(private readonly HealthScoreService $health) {}
 
     public function __invoke(Site $site): JsonResponse
     {

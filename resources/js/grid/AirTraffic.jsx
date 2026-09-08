@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef } from 'react';
 import * as THREE from 'three';
 import { plotPosition } from './Houses';
 
-const MAX_PARTICLES = 600;
+const MAX_PARTICLES = 320;
 
 /**
  * Feature 14 — the air-traffic layer.
@@ -54,18 +54,21 @@ export function AirTraffic({ houses, reducedMotion }) {
         withTraffic.forEach((house) => {
             const share = Math.max(2, Math.round((house.traffic / total) * MAX_PARTICLES));
             const [hx, , hz] = plotPosition(house.x, house.z);
-            color.set(house.protected ? '#7d8892' : '#39ff14');
+            color.set(house.protected ? '#aab6c2' : '#39ff14');
 
             for (let n = 0; n < share && cursor < MAX_PARTICLES; n++, cursor++) {
                 const particle = state[cursor];
                 const angle = Math.random() * Math.PI * 2;
-                const distance = 16 + Math.random() * 10;
+                // Short approach lanes. Spawned far out, the particles spread
+                // across the whole sky and stop reading as traffic arriving
+                // somewhere — they just look like stars.
+                const distance = 4 + Math.random() * 3.5;
 
                 particle.active = true;
                 particle.t = Math.random();
-                particle.speed = 0.12 + Math.random() * 0.14;
-                particle.arc = 3.5 + Math.random() * 3;
-                particle.from.set(hx + Math.cos(angle) * distance, 0.4, hz + Math.sin(angle) * distance);
+                particle.speed = 0.22 + Math.random() * 0.2;
+                particle.arc = 1.1 + Math.random() * 1.2;
+                particle.from.set(hx + Math.cos(angle) * distance, 0.35, hz + Math.sin(angle) * distance);
                 particle.to.set(hx, 0.5, hz);
 
                 colors[cursor * 3] = color.r;
@@ -119,10 +122,10 @@ export function AirTraffic({ houses, reducedMotion }) {
                 <bufferAttribute attach="attributes-color" args={[colors, 3]} />
             </bufferGeometry>
             <pointsMaterial
-                size={0.13}
+                size={0.1}
                 vertexColors
                 transparent
-                opacity={0.75}
+                opacity={0.9}
                 sizeAttenuation
                 depthWrite={false}
                 toneMapped={false}

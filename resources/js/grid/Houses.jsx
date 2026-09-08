@@ -34,20 +34,22 @@ export function Houses({ houses, selectedId, onSelect }) {
             dummy.updateMatrix();
             body.setMatrixAt(i, dummy.matrix);
 
-            dummy.position.set(x, height + 0.28 * house.scale, z);
-            dummy.scale.set(width * 0.92, 0.56 * house.scale, width * 0.92);
+            // A taller pitch: at a shallow one the roof reads as a flat cap from
+            // this camera angle and every house looks like a plain box.
+            dummy.position.set(x, height + 0.4 * house.scale, z);
+            dummy.scale.set(width * 0.9, 0.8 * house.scale, width * 0.9);
             dummy.rotation.set(0, Math.PI / 4, 0);
             dummy.updateMatrix();
             roof.setMatrixAt(i, dummy.matrix);
 
-            // An adopted site is rendered in cold grey and never gets the neon
+            // An adopted site is rendered in cold grey and never gets the green
             // trim — you can tell at a glance which houses JetGrid manages.
+            // These are lit surfaces, so they need real value, not near-black.
             const isSelected = house.id === selectedId;
-            const base = house.protected ? '#2b3138' : '#1d2b22';
-            color.set(isSelected ? '#3a4c40' : base);
+            color.set(isSelected ? '#7bd68d' : house.protected ? '#767f8a' : '#3f7d55');
             body.setColorAt(i, color);
 
-            color.set(house.protected ? '#3a424b' : '#27412e');
+            color.set(isSelected ? '#9ae5aa' : house.protected ? '#8e97a2' : '#54a06d');
             roof.setColorAt(i, color);
         });
 
@@ -79,12 +81,12 @@ export function Houses({ houses, selectedId, onSelect }) {
                 onPointerOut={() => (document.body.style.cursor = 'auto')}
             >
                 <boxGeometry args={[1, 1, 1]} />
-                <meshStandardMaterial roughness={0.75} metalness={0.08} />
+                <meshStandardMaterial roughness={0.6} metalness={0.12} />
             </instancedMesh>
 
             <instancedMesh ref={roofRef} args={[undefined, undefined, capacity]} castShadow>
                 <coneGeometry args={[0.78, 1, 4]} />
-                <meshStandardMaterial roughness={0.85} metalness={0.05} />
+                <meshStandardMaterial roughness={0.7} metalness={0.05} />
             </instancedMesh>
         </group>
     );
@@ -117,7 +119,7 @@ export function EmptyPlots({ plots }) {
     return (
         <instancedMesh ref={ref} args={[undefined, undefined, Math.max(plots.length, 48)]}>
             <planeGeometry args={[1.3, 1.3]} />
-            <meshBasicMaterial color="#1b3f24" transparent opacity={0.42} side={THREE.DoubleSide} />
+            <meshBasicMaterial color="#2f7a41" transparent opacity={0.5} side={THREE.DoubleSide} />
         </instancedMesh>
     );
 }

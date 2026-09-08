@@ -5,7 +5,7 @@
 # App\Services\Privilege\CommandRegistry. Do not edit by hand — edit the
 # registry and regenerate, so the code and this file cannot disagree.
 #
-# Generated: 2026-09-08 02:17:54
+# Generated: 2026-09-08 03:27:51
 #
 # REVIEW THIS FILE BEFORE INSTALLING IT. Every line grants one specific
 # command to the "jetgrid" user with no password. There is deliberately no

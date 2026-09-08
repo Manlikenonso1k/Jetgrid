@@ -3,6 +3,7 @@
 namespace App\Services\Certificates;
 
 use App\Models\CertificateIssuance;
+use Illuminate\Support\Carbon;
 
 /**
  * Feature 3: "track and block, don't just fail".
@@ -44,7 +45,7 @@ class RateLimitTracker
     }
 
     /** When the oldest attempt in the window ages out, unblocking the domain. */
-    public function nextSlotAt(array $domains): ?\Illuminate\Support\Carbon
+    public function nextSlotAt(array $domains): ?Carbon
     {
         $oldest = CertificateIssuance::query()
             ->where('domain_set_hash', $this->hash($domains))
@@ -59,7 +60,7 @@ class RateLimitTracker
      * Record an attempt. Called BEFORE issuance, because a request that was
      * sent and then failed still counted against the limit at the CA.
      *
-     * @param list<string> $domains
+     * @param  list<string>  $domains
      */
     public function record(array $domains, bool $succeeded = false): void
     {

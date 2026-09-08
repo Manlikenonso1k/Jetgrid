@@ -6,15 +6,14 @@ namespace App\Services\Privilege;
 final class BoundCommand
 {
     /**
-     * @param list<string>             $argv
-     * @param array<string,string|int> $args
+     * @param  list<string>  $argv
+     * @param  array<string,string|int>  $args
      */
     public function __construct(
         public readonly PrivilegedCommand $definition,
         public readonly array $argv,
         public readonly array $args,
-    ) {
-    }
+    ) {}
 
     /**
      * Human-readable rendering, shown in dry-run previews and the audit log.

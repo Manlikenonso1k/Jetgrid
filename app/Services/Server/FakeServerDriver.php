@@ -19,9 +19,7 @@ use App\Services\Privilege\BoundCommand;
  */
 class FakeServerDriver implements ServerDriver
 {
-    public function __construct(private readonly string $fixturesPath)
-    {
-    }
+    public function __construct(private readonly string $fixturesPath) {}
 
     public function name(): string
     {

@@ -20,8 +20,7 @@ class DiagnosticsService
     public function __construct(
         private readonly CommandRunner $runner,
         private readonly ServerDriver $driver,
-    ) {
-    }
+    ) {}
 
     /** @return list<array{check:string,status:string,detail:string}> */
     public function run(Site $site): array

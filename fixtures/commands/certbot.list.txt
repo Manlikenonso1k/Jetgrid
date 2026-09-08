@@ -1,0 +1,13 @@
+Found the following certs:
+  Certificate Name: iceland.example.com
+    Domains: iceland.example.com www.iceland.example.com
+    Expiry Date: 2026-11-14 08:12:33+00:00 (VALID: 66 days)
+    Certificate Path: /etc/letsencrypt/live/iceland.example.com/fullchain.pem
+  Certificate Name: moritho.example.com
+    Domains: moritho.example.com
+    Expiry Date: 2026-09-19 11:40:02+00:00 (VALID: 10 days)
+    Certificate Path: /etc/letsencrypt/live/moritho.example.com/fullchain.pem
+  Certificate Name: oceanova.example.com
+    Domains: oceanova.example.com api.oceanova.example.com
+    Expiry Date: 2026-12-01 04:55:18+00:00 (VALID: 83 days)
+    Certificate Path: /etc/letsencrypt/live/oceanova.example.com/fullchain.pem

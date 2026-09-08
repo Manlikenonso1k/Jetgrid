@@ -9,8 +9,7 @@ final class HealthScore
         public readonly int $score,
         public readonly array $components = [],
         public readonly ?string $note = null,
-    ) {
-    }
+    ) {}
 
     public function band(): string
     {

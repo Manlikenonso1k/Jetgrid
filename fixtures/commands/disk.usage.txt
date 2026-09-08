@@ -1,0 +1,4 @@
+Filesystem       1-blocks         Used   Available Capacity Mounted on
+/dev/root     32204675072  13958643712 18246031360      44% /
+tmpfs          2063366144            0  2063366144       0% /dev/shm
+/dev/nvme0n1p15 109422592    6291456   103131136       6% /boot/efi

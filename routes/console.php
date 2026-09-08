@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Certificate;
+use App\Services\Alerts\AlertDispatcher;
 use App\Services\Certificates\CertificateService;
 use Illuminate\Support\Facades\Schedule;
 
@@ -37,12 +38,12 @@ Schedule::call(function (): void {
 
         if (! $result['ok']) {
             // Feature 3: "Alert me on renewal failure, loudly."
-            app(\App\Services\Alerts\AlertDispatcher::class)->send(
+            app(AlertDispatcher::class)->send(
                 subject: "Certificate renewal FAILED: {$certificate->domain}",
                 body: $result['message']."\n\nAttempt "
                     .($certificate->fresh()->renewal_failures)
                     .' of '.config('jetgrid.certificates.max_renewal_attempts')
-                    .". Expires ".($certificate->not_after?->diffForHumans() ?? 'unknown').'.',
+                    .'. Expires '.($certificate->not_after?->diffForHumans() ?? 'unknown').'.',
                 severity: 'critical',
             );
         }
@@ -60,7 +61,7 @@ Schedule::call(function (): void {
         ->get();
 
     foreach ($expiring as $certificate) {
-        app(\App\Services\Alerts\AlertDispatcher::class)->send(
+        app(AlertDispatcher::class)->send(
             subject: "Certificate expiring: {$certificate->domain}",
             body: "Expires in {$certificate->daysRemaining()} days."
                 .($certificate->is_managed

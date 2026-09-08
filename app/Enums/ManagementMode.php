@@ -11,7 +11,7 @@ namespace App\Enums;
  */
 enum ManagementMode: string
 {
-    case Managed          = 'managed';
+    case Managed = 'managed';
     case AdoptedProtected = 'adopted_protected';
 
     public function isProtected(): bool
@@ -22,7 +22,7 @@ enum ManagementMode: string
     public function label(): string
     {
         return match ($this) {
-            self::Managed          => 'Managed by JetGrid',
+            self::Managed => 'Managed by JetGrid',
             self::AdoptedProtected => 'Adopted — Protected',
         };
     }

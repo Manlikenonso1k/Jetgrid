@@ -1,0 +1,4 @@
+[{"unit":"moritho-worker.service","load":"loaded","active":"active","sub":"running","description":"Moritho queue worker"},
+ {"unit":"nginx.service","load":"loaded","active":"active","sub":"running","description":"A high performance web server"},
+ {"unit":"php8.3-fpm.service","load":"loaded","active":"active","sub":"running","description":"The PHP 8.3 FastCGI Process Manager"},
+ {"unit":"mariadb.service","load":"loaded","active":"active","sub":"running","description":"MariaDB 10.6 database server"}]

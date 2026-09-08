@@ -36,13 +36,12 @@ class CommandRunner
         private readonly ServerDriver $driver,
         private readonly ProtectedResourceGuard $guard,
         private readonly KillSwitch $killSwitch,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  array<string,string|int>  $args
      * @param  Model|null  $target  the site/resource this acts on, for the protected gate
-     * @param  bool|null   $dryRun  null = fall back to configuration
+     * @param  bool|null  $dryRun  null = fall back to configuration
      */
     public function run(
         string $key,
@@ -93,7 +92,7 @@ class CommandRunner
      * Render a command without running it or writing an audit record. Used to
      * populate the confirmation dialog required by safety constraint #6.
      *
-     * @param array<string,string|int> $args
+     * @param  array<string,string|int>  $args
      */
     public function preview(string $key, array $args = []): string
     {

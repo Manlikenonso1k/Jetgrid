@@ -14,8 +14,8 @@ use App\Exceptions\InvalidCommandArgumentException;
 final class PrivilegedCommand
 {
     /**
-     * @param  list<string>            $argv
-     * @param  array<string,string>    $patterns  placeholder => PCRE pattern
+     * @param  list<string>  $argv
+     * @param  array<string,string>  $patterns  placeholder => PCRE pattern
      */
     public function __construct(
         public readonly string $key,
@@ -24,8 +24,7 @@ final class PrivilegedCommand
         public readonly bool $isWrite,
         public readonly bool $needsRoot,
         public readonly string $justification,
-    ) {
-    }
+    ) {}
 
     /** @param array<string,string|int> $args */
     public function bind(array $args): BoundCommand

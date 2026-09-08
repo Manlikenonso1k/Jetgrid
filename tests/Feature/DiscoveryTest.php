@@ -8,6 +8,7 @@ use App\Models\CronJob;
 use App\Models\ProtectedResource;
 use App\Models\Site;
 use App\Services\Discovery\DiscoveryService;
+use App\Support\KillSwitch;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\File;
 use Tests\TestCase;
@@ -49,7 +50,7 @@ class DiscoveryTest extends TestCase
     {
         // The kill switch is what actually decides, and it casts defensively;
         // assert on it rather than on the raw config value's type.
-        $this->assertTrue(app(\App\Support\KillSwitch::class)->isReadOnly());
+        $this->assertTrue(app(KillSwitch::class)->isReadOnly());
 
         $report = app(DiscoveryService::class)->run();
 

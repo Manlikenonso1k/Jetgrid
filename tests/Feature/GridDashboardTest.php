@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Enums\Role;
+use App\Models\Site;
 use App\Models\User;
 use App\Services\Capacity\CapacityEstimator;
 use App\Services\Discovery\DiscoveryService;
@@ -53,7 +54,7 @@ class GridDashboardTest extends TestCase
             $this->assertSame('grey', $house['beacon']);
         }
 
-        $site = \App\Models\Site::firstWhere('domain', 'iceland.example.com');
+        $site = Site::firstWhere('domain', 'iceland.example.com');
 
         // Safety constraint #1: even for god_mode, the detail endpoint offers no
         // actions for a protected site, so the UI has nothing to render.
@@ -68,7 +69,7 @@ class GridDashboardTest extends TestCase
         app(DiscoveryService::class)->run();
         $this->actingAs(User::factory()->create(['role' => Role::GodMode]));
 
-        $site = \App\Models\Site::firstWhere('domain', 'iceland.example.com');
+        $site = Site::firstWhere('domain', 'iceland.example.com');
         $site->unprotect();
 
         $actions = $this->getJson("/jetgrid/api/sites/{$site->id}")->assertOk()->json('actions');
@@ -112,7 +113,7 @@ class GridDashboardTest extends TestCase
 
     public function test_capacity_is_zero_and_honest_when_nothing_can_be_read(): void
     {
-        $estimate = app(CapacityEstimator::class)->estimate(new ServerFacts());
+        $estimate = app(CapacityEstimator::class)->estimate(new ServerFacts);
 
         $this->assertSame(0, $estimate->slots);
         $this->assertNull($estimate->limitingFactor);

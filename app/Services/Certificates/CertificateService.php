@@ -9,6 +9,7 @@ use App\Models\Site;
 use App\Services\Privilege\CommandRunner;
 use App\Support\ProtectedResourceGuard;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 use RuntimeException;
 
 /**
@@ -26,8 +27,7 @@ class CertificateService
         private readonly DnsPreflight $preflight,
         private readonly RateLimitTracker $rateLimits,
         private readonly ProtectedResourceGuard $guard,
-    ) {
-    }
+    ) {}
 
     /**
      * Read every certificate on the box, managed or not, and record expiry.
@@ -211,7 +211,7 @@ class CertificateService
     }
 
     /** Certificates due for renewal, managed only. */
-    public function dueForRenewal(): \Illuminate\Support\Collection
+    public function dueForRenewal(): Collection
     {
         $days = (int) config('jetgrid.certificates.renew_days_before');
         $maxAttempts = (int) config('jetgrid.certificates.max_renewal_attempts');

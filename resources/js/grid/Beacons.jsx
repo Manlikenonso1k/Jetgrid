@@ -27,11 +27,22 @@ export function Beacons({ houses, reducedMotion }) {
 
         houses.forEach((house, i) => {
             const [x, , z] = plotPosition(house.x, house.z);
-            const height = 0.9 * house.scale + 0.56 * house.scale + 0.18;
 
-            // Offset to a roof CORNER, like a wingtip light rather than a spire.
-            dummy.position.set(x + 0.42 * house.scale, height, z + 0.42 * house.scale);
-            dummy.scale.setScalar(0.13);
+            /*
+             * On the EAVE CORNER, like a wingtip strobe rather than a spire.
+             *
+             * These numbers are tied to the roof in Houses.jsx: its cone has
+             * radius 0.78 scaled by width*0.9, so its base corners sit about
+             * 0.81*scale from the centre. The diagonal offset below puts the
+             * beacon at ~0.93*scale — just outside that, so it reads as a light
+             * mounted on the corner instead of being swallowed by the roof.
+             * If the roof pitch or width changes, this has to change with it.
+             */
+            const height = 0.9 * house.scale + 0.06;
+            const corner = 0.66 * house.scale;
+
+            dummy.position.set(x + corner, height, z + corner);
+            dummy.scale.setScalar(0.15);
             dummy.updateMatrix();
             mesh.setMatrixAt(i, dummy.matrix);
         });

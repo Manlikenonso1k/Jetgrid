@@ -27,8 +27,7 @@ final class ServerFacts
         public readonly ?float $cpuCreditUsage = null,
         public readonly ?float $cpuSurplusCreditBalance = null,
         public readonly ?string $creditSource = null,
-    ) {
-    }
+    ) {}
 
     public function ramUsedPercent(): ?float
     {

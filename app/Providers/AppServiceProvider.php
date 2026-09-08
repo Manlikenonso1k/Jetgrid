@@ -17,7 +17,7 @@ class AppServiceProvider extends ServiceProvider
         // than merely unlikely.
         $this->app->singleton(ServerDriver::class, function ($app) {
             return match (config('jetgrid.driver')) {
-                'linux' => new LinuxServerDriver(),
+                'linux' => new LinuxServerDriver,
                 default => new FakeServerDriver(config('jetgrid.fixtures_path')),
             };
         });

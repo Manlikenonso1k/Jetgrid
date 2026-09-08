@@ -83,7 +83,7 @@ class TwoFactor extends Page implements HasForms
             $this->pendingSecret(),
         );
 
-        $writer = new Writer(new ImageRenderer(new RendererStyle(200), new SvgImageBackEnd()));
+        $writer = new Writer(new ImageRenderer(new RendererStyle(200), new SvgImageBackEnd));
 
         return new HtmlString($writer->writeString($url));
     }

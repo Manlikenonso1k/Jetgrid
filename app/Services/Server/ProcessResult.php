@@ -10,8 +10,7 @@ final class ProcessResult
         public readonly string $stderr,
         public readonly int $durationMs,
         public readonly bool $skipped = false,
-    ) {
-    }
+    ) {}
 
     public function ok(): bool
     {

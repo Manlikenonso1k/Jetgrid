@@ -15,8 +15,7 @@ final class CapacityEstimate
         public readonly int $slots,
         public readonly ?string $limitingFactor,
         public readonly ?string $limitingLabel,
-    ) {
-    }
+    ) {}
 
     /** @param list<CapacityConstraint> $constraints */
     public static function from(array $constraints): self

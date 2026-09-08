@@ -1,7 +1,6 @@
-import { OrbitControls } from '@react-three/drei';
+import { Grid, OrbitControls } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import { Suspense } from 'react';
-import * as THREE from 'three';
 import { AirTraffic } from './AirTraffic';
 import { Beacons } from './Beacons';
 import { EmptyPlots, Houses } from './Houses';
@@ -15,16 +14,34 @@ function Ground() {
                 <planeGeometry args={[300, 300]} />
                 <meshStandardMaterial color="#080c0e" roughness={1} />
             </mesh>
+
             {/*
               Neon grid lines. This is the one place the true #39FF14 belongs: on
               the dark canvas, where it reads as neon instead of noise.
 
-              The cell size is exactly one plot, so the grid reads as the plots
-              the houses actually sit on rather than as decorative graph paper.
+              drei's Grid rather than three's gridHelper: the helper draws 1px
+              GL_LINES that all but vanish at this camera distance, while this is
+              a shader on a plane, so the lines keep their weight and fade out
+              with distance instead of ending in a hard square edge — which is
+              what a view from a jet should look like.
+
+              cellSize is exactly one plot, so the grid reads as the plots the
+              houses actually sit on rather than as decorative graph paper.
             */}
-            <gridHelper
-                args={[PLOT * 60, 60, new THREE.Color('#39ff14'), new THREE.Color('#1e4d29')]}
-                position={[0, 0, 0]}
+            <Grid
+                position={[0, 0.01, 0]}
+                infiniteGrid
+                cellSize={PLOT}
+                cellThickness={0.6}
+                cellColor="#1d5f2a"
+                sectionSize={PLOT * 4}
+                sectionThickness={1}
+                // Not full #39FF14: at section spacing the true neon reads as
+                // laser beams cutting across the scene rather than as ground.
+                sectionColor="#2bb332"
+                fadeDistance={38}
+                fadeStrength={1.8}
+                followCamera={false}
             />
         </>
     );

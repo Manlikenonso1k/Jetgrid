@@ -1,0 +1,4 @@
+# m h  dom mon dow   command
+*/5 * * * * /usr/bin/php /var/www/iceland/artisan schedule:run >> /dev/null 2>&1
+0 3 * * * /usr/local/bin/backup-moritho.sh
+30 4 * * 0 /usr/bin/certbot renew --quiet

@@ -15,8 +15,7 @@ class MetricsCollector
     public function __construct(
         private readonly CommandRunner $runner,
         private readonly CpuCreditReader $credits,
-    ) {
-    }
+    ) {}
 
     public function collect(): ServerFacts
     {

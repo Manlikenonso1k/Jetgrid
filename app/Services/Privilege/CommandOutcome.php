@@ -12,8 +12,7 @@ final class CommandOutcome
         public readonly ProcessResult $result,
         public readonly bool $wasDryRun,
         public readonly AuditLog $audit,
-    ) {
-    }
+    ) {}
 
     public function ok(): bool
     {

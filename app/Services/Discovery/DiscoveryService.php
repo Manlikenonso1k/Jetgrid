@@ -30,12 +30,11 @@ class DiscoveryService
         private readonly ServerDriver $driver,
         private readonly CommandRunner $runner,
         private readonly NginxVhostParser $nginxParser,
-    ) {
-    }
+    ) {}
 
     public function run(): DiscoveryReport
     {
-        $report = new DiscoveryReport();
+        $report = new DiscoveryReport;
 
         $this->discoverNginx($report);
         $this->discoverApache($report);

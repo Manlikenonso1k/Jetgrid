@@ -20,22 +20,36 @@ class CommandRegistry
 
     // Argument patterns. Deliberately strict — an argument that does not match
     // never reaches the process layer.
-    public const P_DOMAIN   = '/^(?=.{1,253}$)(?!-)[a-z0-9-]{1,63}(?<!-)(\.(?!-)[a-z0-9-]{1,63}(?<!-))+$/i';
+    public const P_DOMAIN = '/^(?=.{1,253}$)(?!-)[a-z0-9-]{1,63}(?<!-)(\.(?!-)[a-z0-9-]{1,63}(?<!-))+$/i';
+
     public const P_SITENAME = '/^jetgrid-[a-z0-9]([a-z0-9._-]{0,60}[a-z0-9])?$/';
-    public const P_UNIT     = '/^jetgrid-[a-z0-9@._-]{1,64}\.(service|timer)$/';
-    public const P_PHPVER   = '/^(7\.4|8\.[0-9])$/';
-    public const P_EMAIL    = '/^[^@\s]{1,64}@[^@\s]{1,190}$/';
-    public const P_PORT     = '/^(?:[1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$/';
-    public const P_PROTO    = '/^(tcp|udp)$/';
-    public const P_IPV4     = '/^(?:(?:25[0-5]|2[0-4]\d|1?\d?\d)\.){3}(?:25[0-5]|2[0-4]\d|1?\d?\d)$/';
-    public const P_JAIL     = '/^[a-z0-9-]{1,32}$/';
-    public const P_SYSUSER  = '/^[a-z_][a-z0-9_-]{0,31}$/';
+
+    public const P_UNIT = '/^jetgrid-[a-z0-9@._-]{1,64}\.(service|timer)$/';
+
+    public const P_PHPVER = '/^(7\.4|8\.[0-9])$/';
+
+    public const P_EMAIL = '/^[^@\s]{1,64}@[^@\s]{1,190}$/';
+
+    public const P_PORT = '/^(?:[1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$/';
+
+    public const P_PROTO = '/^(tcp|udp)$/';
+
+    public const P_IPV4 = '/^(?:(?:25[0-5]|2[0-4]\d|1?\d?\d)\.){3}(?:25[0-5]|2[0-4]\d|1?\d?\d)$/';
+
+    public const P_JAIL = '/^[a-z0-9-]{1,32}$/';
+
+    public const P_SYSUSER = '/^[a-z_][a-z0-9_-]{0,31}$/';
+
     public const P_READPATH = '#^/[A-Za-z0-9._/-]{1,200}$#';
-    public const P_ANYUNIT  = '/^[a-zA-Z0-9@._-]{1,128}\.(service|timer|socket)$/';
+
+    public const P_ANYUNIT = '/^[a-zA-Z0-9@._-]{1,128}\.(service|timer|socket)$/';
+
     // Managed write paths only: JetGrid's own vhost dir, with its mandatory prefix.
-    public const P_VHOST    = '#^/etc/nginx/sites-available/jetgrid-[a-z0-9][a-z0-9._-]{0,60}$#';
+    public const P_VHOST = '#^/etc/nginx/sites-available/jetgrid-[a-z0-9][a-z0-9._-]{0,60}$#';
+
     public const P_CERTPATH = '#^/etc/letsencrypt/live/[a-z0-9.-]{1,253}/fullchain\.pem$#';
-    public const P_WEBROOT  = '#^/var/www/letsencrypt$#';
+
+    public const P_WEBROOT = '#^/var/www/letsencrypt$#';
 
     /** @return array<string,PrivilegedCommand> */
     public function all(): array
