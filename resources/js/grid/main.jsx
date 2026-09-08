@@ -1,5 +1,5 @@
 import { createRoot } from 'react-dom/client';
-import { GridDashboard } from './GridDashboard';
+import { reportBootFailure, SceneErrorBoundary } from './ErrorBoundary';
 
 /**
  * Mounts the 3D dashboard into the custom Filament page.
@@ -10,17 +10,29 @@ import { GridDashboard } from './GridDashboard';
  * places to keep the layout consistent — for a single canvas that only needs a
  * div and a JSON endpoint. React mounts into the page; everything else stays
  * Livewire.
+ *
+ * GridDashboard is loaded dynamically so a failure inside three/drei is reported
+ * in the page instead of leaving an empty div behind.
  */
 function mount(element) {
     if (element.dataset.jgMounted === 'true') return;
     element.dataset.jgMounted = 'true';
 
-    createRoot(element).render(
-        <GridDashboard
-            gridEndpoint={element.dataset.gridEndpoint}
-            siteEndpoint={element.dataset.siteEndpoint}
-        />,
-    );
+    import('./GridDashboard')
+        .then(({ GridDashboard }) => {
+            createRoot(element).render(
+                <SceneErrorBoundary>
+                    <GridDashboard
+                        gridEndpoint={element.dataset.gridEndpoint}
+                        siteEndpoint={element.dataset.siteEndpoint}
+                    />
+                </SceneErrorBoundary>,
+            );
+        })
+        .catch((error) => {
+            console.error('[JetGrid] dashboard bundle failed to evaluate:', error);
+            reportBootFailure(element, error?.stack || String(error));
+        });
 }
 
 function mountAll() {

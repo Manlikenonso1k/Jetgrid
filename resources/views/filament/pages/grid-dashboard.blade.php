@@ -10,7 +10,12 @@
         data-jetgrid-scene
         data-grid-endpoint="{{ route('jetgrid.api.grid') }}"
         data-site-endpoint="{{ url('jetgrid/api/sites') }}"
-    ></div>
+    >
+        {{-- Replaced when React mounts; still visible means the bundle never ran. --}}
+        <div style="padding:24px;color:#8a97a0;font:13px/1.6 ui-monospace,Menlo,Consolas,monospace">
+            Booting the 3D grid&hellip; if this text remains, the JavaScript bundle did not execute.
+        </div>
+    </div>
 
     @vite('resources/js/grid/main.jsx')
 
