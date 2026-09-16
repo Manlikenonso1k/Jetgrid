@@ -243,6 +243,88 @@ Even with writes enabled, three things stay unconditional:
 
 ---
 
+## ◤ EXTERNAL REACHABILITY — "LOCALHOST HEALTH IS NOT HEALTH"
+
+```
+╔══════════════════════════════════════════════════════════════════════════════╗
+║  A production domain was suspended by its registrar. The nameservers were    ║
+║  silently replaced with NS1.VERIFICATION-HOLD.SUSPENDED-DOMAIN.COM.          ║
+║                                                                              ║
+║  The server stayed healthy and returned HTTP 200 to ITSELF the entire time,  ║
+║  so every check passed while the site was unreachable worldwide.             ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+```
+
+The original HTTP check is still there, but it is now labelled **internal** —
+because that is all it ever proved. Five checks run from the outside in:
+
+| Check | Alerts on | Cadence |
+|---|---|--:|
+| **DNS** | NXDOMAIN · REFUSED · SERVFAIL · empty answer · resolves to a loopback/RFC1918 address · resolves away from this server | `5 min` |
+| **Nameservers** | any change from the recorded baseline; **CRITICAL** on registrar-hold hostnames | `5 min` |
+| **External reachability** | internal check passing **+** DNS failing = *"reachable locally, unreachable externally"* | `5 min` |
+| **TLS** | expiry at 21 / 14 / 7 / 3 days, read from the externally resolved host | `6 h` |
+| **Registrar (RDAP)** | `clientHold` · `serverHold` · `pendingDelete` · `redemptionPeriod` · `transferPeriod`; registry expiry at 30 / 14 / 7 / 1 days | `24 h` |
+
+The NS baseline is **recorded from the first successful lookup, never
+hardcoded** — "changed from what we saw before" is the only definition that
+works across registrars.
+
+**No new privileged commands.** DNS goes over DoH against two independent
+resolvers (1.1.1.1 and 8.8.8.8) and registrar status over RDAP — both plain
+HTTPS. Nothing was added to the sudoers whitelist for any of this.
+
+**A failed lookup is `UNKNOWN`, never `OK`.** "We could not ask" and "the answer
+was fine" are different facts, and conflating them is exactly how a suspended
+domain reported green.
+
+### Alert discipline — the part that matters more than the checks
+
+```
+  ▸ STATE CHANGES ONLY   healthy→failing and failing→healthy. A check running
+                         every 5 min must not produce 288 messages a day.
+  ▸ CONFIRM FIRST        N consecutive failures (default 2) before believing one
+  ▸ RATE LIMITED         at most one alert per site per check type per hour
+  ▸ DIGEST               several sites failing at once collapse into one message
+  ▸ RECOVERED            explicit, with how long it was down
+  ▸ DAILY SUMMARY        sent even when everything is healthy — silent monitoring
+                         is indistinguishable from broken monitoring
+```
+
+Every message names the site, the check, the **observed** value, the **expected**
+value, and how long it has been failing.
+
+```env
+TELEGRAM_ALERTS_ENABLED=true
+TELEGRAM_BOT_TOKEN=...
+TELEGRAM_CHAT_ID=...
+```
+
+Per-site overrides live in `sites.meta.telegram_chat_id`, so different clients'
+alerts can go to different groups from one bot.
+
+> **Adopted — Protected sites are monitored exactly like managed ones.** Every
+> result is written to JetGrid's own `domain_check_*` tables keyed by `site_id`,
+> never to the site row — asserted by
+> `test_monitoring_an_adopted_protected_site_writes_nothing_to_that_site`.
+
+### Watching your Windows machine too
+
+[`tools/local-monitor/`](tools/local-monitor/) is a standalone single-file
+checker — no Composer, no framework, no database — that watches local dev
+services and posts to the same bot, prefixed `[LOCAL]`. It is deliberately
+independent: if the AWS box is down local alerting still works, and vice versa.
+
+```powershell
+cd tools\local-monitor
+copy config.example.json config.json   # paste token + chat id, edit targets
+php check.php --test
+schtasks /Create /TN "JetGrid Local Monitor" /SC MINUTE /MO 5 /F ^
+  /TR "\"C:\php\php.exe\" \"%CD%\check.php\""
+```
+
+---
+
 ## ◤ UN-PROTECTING A SITE, DELIBERATELY
 
 The only route out of protection. Intentionally awkward.

@@ -25,6 +25,10 @@
         </div>
     </div>
 
+    {{-- Must precede @vite: injects the react-refresh preamble the plugin looks
+         for. Without it @vitejs/plugin-react throws "can't detect preamble" and
+         the scene never mounts in dev. No-op for production builds. --}}
+    @viteReactRefresh
     @vite('resources/js/grid/main.jsx')
 
     <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3 mt-6">

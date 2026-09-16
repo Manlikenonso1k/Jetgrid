@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>JetGrid — scene preview</title>
+    @viteReactRefresh
     @vite('resources/js/grid-preview/main.jsx')
 </head>
 <body>

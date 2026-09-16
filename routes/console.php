@@ -71,3 +71,37 @@ Schedule::call(function (): void {
         );
     }
 })->dailyAt('08:00')->name('jetgrid:cert-expiry-warnings');
+
+/*
+|--------------------------------------------------------------------------
+| External reachability
+|--------------------------------------------------------------------------
+| All read-only, and all safe on Adopted — Protected sites: results are written
+| to JetGrid's own domain_check_* tables, never to the monitored site. These run
+| unchanged with JETGRID_READONLY=true, because checking whether a domain
+| resolves is not a write.
+*/
+
+// Paired with jetgrid:monitor's internal check — the comparison between the two
+// is what catches "healthy to itself, invisible to the world".
+Schedule::command('jetgrid:check-domains')
+    ->everyFiveMinutes()
+    ->withoutOverlapping()
+    ->runInBackground();
+
+Schedule::command('jetgrid:check-tls')
+    ->everySixHours()
+    ->withoutOverlapping()
+    ->runInBackground();
+
+// Hourly, but each domain is only looked up once per 24h — the command staggers
+// by site id and the snapshot cache enforces the interval.
+Schedule::command('jetgrid:check-whois')
+    ->hourly()
+    ->withoutOverlapping()
+    ->runInBackground();
+
+// Sent whether or not anything is wrong: silence must never be ambiguous.
+Schedule::command('jetgrid:daily-summary')
+    ->dailyAt((string) config('jetgrid.alerts.daily_summary_at', '09:00'))
+    ->name('jetgrid:daily-summary');

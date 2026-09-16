@@ -227,6 +227,93 @@ return [
         'start_grace_seconds' => 30,
     ],
 
+    /*
+    |---------------------------------------------------------------------------
+    | EXTERNAL REACHABILITY
+    |---------------------------------------------------------------------------
+    | The existing HTTP check runs on the server and can reach the server even
+    | when the world cannot — a domain suspended at the registrar returned 200 to
+    | itself throughout. Everything here checks the domain from the outside in.
+    |
+    | All of it is read-only and needs no privileged command: DNS goes over DoH
+    | and registrar status over RDAP, both plain HTTPS. There is nothing here a
+    | protected site can be harmed by.
+    */
+    'reachability' => [
+
+        // DNS-over-HTTPS rather than dig: two genuinely independent resolvers,
+        // identical behaviour on Windows and Linux, and no binary to whitelist.
+        'resolvers' => [
+            ['name' => 'cloudflare', 'url' => 'https://cloudflare-dns.com/dns-query'],
+            ['name' => 'google', 'url' => 'https://dns.google/resolve'],
+        ],
+
+        // Left null, JetGrid discovers it once per run and caches it. Set it
+        // explicitly if the box sits behind NAT and cannot see its own address.
+        'public_ip' => env('JETGRID_PUBLIC_IP'),
+        'public_ip_services' => [
+            'https://api.ipify.org',
+            'https://checkip.amazonaws.com',
+        ],
+        'public_ip_cache_ttl' => 3600,
+
+        /*
+         * Registrar hold indicators. A nameserver hostname containing any of
+         * these means the registrar has taken the domain over — the exact signal
+         * that was missed. Matched case-insensitively as a substring.
+         */
+        'suspension_patterns' => [
+            'suspended-domain', 'verification-hold', 'clienthold', 'serverhold',
+            'pendingdelete', 'pending-delete', 'redemptionperiod', 'domainhold',
+            'expired-domain', 'parkingcrew', 'registrar-hold',
+        ],
+
+        // EPP status codes that mean the domain is not fully live.
+        'critical_epp_statuses' => [
+            'clienthold', 'serverhold', 'pendingdelete',
+            'redemptionperiod', 'transferperiod',
+        ],
+
+        'registry_expiry_warn_days' => [30, 14, 7, 1],
+        'tls_warn_days' => [21, 14, 7, 3],
+
+        'http_timeout' => 10,
+        'whois_interval_hours' => 24,
+        'rdap_endpoint' => 'https://rdap.org/domain/',
+    ],
+
+    /*
+    |---------------------------------------------------------------------------
+    | TELEGRAM ALERTING
+    |---------------------------------------------------------------------------
+    | Alert discipline matters more than the checks themselves: a check that runs
+    | every five minutes must not produce 288 identical messages a day, and
+    | silence must never be ambiguous — hence the daily summary, which is sent
+    | even when everything is healthy.
+    */
+    'telegram' => [
+        'enabled' => env('TELEGRAM_ALERTS_ENABLED', false),
+        'bot_token' => env('TELEGRAM_BOT_TOKEN'),
+        'chat_id' => env('TELEGRAM_CHAT_ID'),
+        'api_base' => 'https://api.telegram.org',
+        'timeout' => 10,
+    ],
+
+    'alerts' => [
+        // Suppress transient blips: a single failed DNS lookup is noise, two in
+        // a row is a signal.
+        'failures_before_alert' => (int) env('JETGRID_ALERT_FAILURE_THRESHOLD', 2),
+
+        // Ceiling per site per check type, so a flapping domain cannot flood.
+        'rate_limit_minutes' => (int) env('JETGRID_ALERT_RATE_LIMIT_MIN', 60),
+
+        // Above this many sites failing in one run, send one digest instead of
+        // one message each.
+        'digest_threshold' => (int) env('JETGRID_ALERT_DIGEST_THRESHOLD', 3),
+
+        'daily_summary_at' => env('JETGRID_DAILY_SUMMARY_AT', '09:00'),
+    ],
+
     'pricing' => [
         // (b) seeded JSON with a visible last-updated date + admin refresh action.
         'source' => 'seeded-json',

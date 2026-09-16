@@ -130,6 +130,26 @@ class Site extends Model implements Protectable
         return $this->hasMany(HealthCheck::class);
     }
 
+    public function checkResults(): HasMany
+    {
+        return $this->hasMany(DomainCheckResult::class);
+    }
+
+    public function checkStates(): HasMany
+    {
+        return $this->hasMany(DomainCheckState::class);
+    }
+
+    public function domainBaseline(): HasOne
+    {
+        return $this->hasOne(DomainBaseline::class);
+    }
+
+    public function whoisSnapshot(): HasOne
+    {
+        return $this->hasOne(WhoisSnapshot::class);
+    }
+
     public function backups(): HasMany
     {
         return $this->hasMany(Backup::class);
