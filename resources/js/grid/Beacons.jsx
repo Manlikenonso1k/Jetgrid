@@ -31,12 +31,13 @@ export function Beacons({ houses, reducedMotion }) {
             /*
              * On the EAVE CORNER, like a wingtip strobe rather than a spire.
              *
-             * These numbers are tied to the roof in Houses.jsx: its cone has
-             * radius 0.78 scaled by width*0.9, so its base corners sit about
-             * 0.81*scale from the centre. The diagonal offset below puts the
-             * beacon at ~0.93*scale — just outside that, so it reads as a light
-             * mounted on the corner instead of being swallowed by the roof.
-             * If the roof pitch or width changes, this has to change with it.
+             * These numbers are tied to the roof in Houses.jsx: the gable's
+             * eaves sit at BODY_W * ROOF_OVERHANG / 2 = 0.621*scale from the
+             * centre, and its base rests on the wall top at BODY_H = 0.9*scale.
+             * The diagonal offset below puts the beacon at ~0.93*scale — just
+             * outside the eave corner, so it reads as a light mounted on the
+             * corner instead of being swallowed by the roof.
+             * If the roof pitch or overhang changes, this has to change with it.
              */
             const height = 0.9 * house.scale + 0.06;
             const corner = 0.66 * house.scale;
